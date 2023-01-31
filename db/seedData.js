@@ -7,20 +7,62 @@ async function dropTables() {
 
     // drop all tables, in the correct order
    client.query(`
-    DROP TABLE IF EXISTS mytablename;`
+    DROP TABLE IF EXISTS routineactivities;
+    DROP TABLE IF EXISTS routines;
+    DROP TABLE IF EXISTS activities;
+    DROP TABLE IF EXISTS users;
+    
+    
+    `
     );
 
     console.log("Finished Dropping All Tables!");
 }
 
 async function createTables() {
+  try{
   console.log("Starting to build tables...")
   // create all tables, in the correct order
-  client.query(`
-    CREATE TABLE mytablename;`
+  
+  await client.query(`
+    CREATE TABLE users(
+     id SERIAL PRIMARY KEY,
+     username VARCHAR(255) UNIQUE NOT NULL,
+     password VARCHAR(255) NOT NULL
+    );
+
+    CREATE TABLE activities(
+     id SERIAL PRIMARY KEY,
+     name VARCHAR(255) UNIQUE NOT NULL,
+     description TEXT NOT NULL
+    );
+
+    CREATE TABLE routines(
+      id SERIAL PRIMARY KEY,
+      "creatorId" INTEGER REFERENCES users(id),
+      "isPublic" BOOLEAN DEFAULT false,
+      name VARCHAR(255) UNIQUE NOT NULL,
+      goal TEXT NOT NULL
+    );
+
+    CREATE TABLE routineactivities(
+      id SERIAL PRIMARY KEY,
+      "creatorId" INTEGER REFERENCES routines(id) UNIQUE,
+      "activityId" INTEGER REFERENCES activities(id) UNIQUE,
+      duration INTEGER,
+      count INTEGER
+    );
+
+    `
     );
   console.log("Finished Creating All Tables!");
+} catch (error) {
+  console.error('Error Occurred When Creating All Tables');
+
+  throw error;
+
 }
+};
 
 /* 
 
