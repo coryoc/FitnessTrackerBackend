@@ -5,26 +5,24 @@ const client = require("./client");
 async function dropTables() {
   console.log("Dropping All Tables...");
 
-    // drop all tables, in the correct order
-   client.query(`
+  // drop all tables, in the correct order
+  client.query(`
     DROP TABLE IF EXISTS routineactivities;
     DROP TABLE IF EXISTS routines;
     DROP TABLE IF EXISTS activities;
     DROP TABLE IF EXISTS users;
-    
-    
     `
-    );
+  );
 
-    console.log("Finished Dropping All Tables!");
+  console.log("Finished Dropping All Tables!");
 }
 
 async function createTables() {
-  try{
-  console.log("Starting to build tables...")
-  // create all tables, in the correct order
-  
-  await client.query(`
+  try {
+    console.log("Starting to build tables...")
+    // create all tables, in the correct order
+
+    await client.query(`
     CREATE TABLE users(
      id SERIAL PRIMARY KEY,
      username VARCHAR(255) UNIQUE NOT NULL,
@@ -55,13 +53,13 @@ async function createTables() {
 
     `
     );
-  console.log("Finished Creating All Tables!");
-} catch (error) {
-  console.error('Error Occurred When Creating All Tables');
+    console.log("Finished Creating All Tables!");
+  } catch (error) {
+    console.error('Error Occurred When Creating All Tables');
 
-  throw error;
+    throw error;
 
-}
+  }
 };
 
 /* 
