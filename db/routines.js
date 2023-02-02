@@ -15,7 +15,7 @@ async function getRoutineById(id) { }
 
 async function getRoutinesWithoutActivities() {
   const { rows: routines } = await client.query(`
-    SELECT "creatorId", "isPublic", name, goal FROM routines; 
+    SELECT id, "creatorId", "isPublic", name, goal FROM routines; 
   `);
 
   console.log('routines:', routines);
