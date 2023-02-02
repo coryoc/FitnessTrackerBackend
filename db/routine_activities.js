@@ -14,6 +14,7 @@ async function addActivityToRoutine({
     RETURNING *;
     `, [routineId, activityId, count, duration]);
 
+  console.log(routine_activity)
 
 
   return routine_activity;
