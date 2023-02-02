@@ -14,13 +14,13 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 async function getRoutineById(id) { }
 
 async function getRoutinesWithoutActivities() {
-  const { rows: [activities] } = await client.query(`
-    SELECT * FROM routines; 
+  const { rows: routines } = await client.query(`
+    SELECT "creatorId", "isPublic", name, goal FROM routines; 
   `);
 
-  console.log('activities:', activities);
+  console.log('routines:', routines);
 
-  return activities;
+  return routines;
 }
 
 async function getAllRoutines() { }
