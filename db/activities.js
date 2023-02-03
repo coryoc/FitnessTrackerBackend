@@ -37,9 +37,36 @@ async function getAllActivities() {
 
 }
 
-async function getActivityById(id) { }
+async function getActivityById(id) {
+  try {
+    const { rows: [activities] } = await client.query(`
+      SELECT * FROM activities
+      WHERE id=$1;
+    `, [id]);
 
-async function getActivityByName(name) { }
+    return activities;
+
+  } catch (error) {
+    console.log('Error executing getActivityById within activities.js');
+    throw error;
+  }
+
+}
+
+async function getActivityByName(name) {
+  try {
+    const { rows: [activities] } = await client.query(`
+      SELECT * FROM activities
+      WHERE name=$1;
+    `, [name]);
+
+    return activities;
+  } catch (error) {
+    console.log('Error executing getActivityByName within activities.js');
+    throw error;
+  }
+
+}
 
 async function attachActivitiesToRoutines(routines) {
   // select and return an array of all activities
