@@ -7,17 +7,20 @@ async function addActivityToRoutine({
   duration,
 }) {
 
-  const { rows: [routine_activity] } = await client.query(`
-    INSERT INTO routineactivities("routineId", "activityId", count, duration)
-    VALUES ($1, $2, $3, $4)
-    ON CONFLICT (id) DO NOTHING
-    RETURNING *;
-    `, [routineId, activityId, count, duration]);
+  try {
+    const { rows: [routine_activity] } = await client.query(`
+      INSERT INTO routine_activities("routineId", "activityId", count, duration)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (id) DO NOTHING
+      RETURNING *;
+      `, [routineId, activityId, count, duration]);
 
-  console.log(routine_activity)
+    return routine_activity;
 
-
-  return routine_activity;
+  } catch (error) {
+    console.log('Error executing addActivityToRoutine within routine_activites.js');
+    throw error;
+  }
 
 }
 
