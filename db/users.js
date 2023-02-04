@@ -32,12 +32,14 @@ async function getUser({ username, password }) {
   const selectedUsername = selectedUser.username
   const hashedPassword = selectedUser.password
 
-  console.log('user is:', selectedUsername)
+  // console.log('user is:', selectedUsername)
 
-  console.log('password is:', password);
-  console.log('hashedPassword is:', hashedPassword);
+  // console.log('password is:', password);
+  // console.log('hashedPassword is:', hashedPassword);
 
   let passwordsMatch = await bcrypt.compare(password, hashedPassword)
+  // console.log('passwordsMatch?', passwordsMatch);
+
   if (passwordsMatch) {
     try {
       const { rows: [user] } = await client.query(`
@@ -52,9 +54,10 @@ async function getUser({ username, password }) {
       console.log('Error executing getUser from users.js');
       throw error;
     }
-  } else {
-    throw Error('Invalid Password');
   }
+
+  //fixed the issue, if passwords don't match, this should do nothing per the test
+  //I was throwing an error which the test counted as a return
 
 }
 
