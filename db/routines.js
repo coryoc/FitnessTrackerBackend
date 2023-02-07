@@ -55,11 +55,16 @@ async function getRoutinesWithoutActivities() {
 async function getAllRoutines() {
   try {
     const { rows: routines } = await client.query(`
-      SELECT * FROM routines
+      SELECT
+        routines.*,
+        users.username AS "creatorName"
+      FROM routines
+      JOIN users
+      ON routines."creatorId" = users.id;
     `)
 
-    let routinesAndActivities = attachActivitiesToRoutines(routines);
-    routinesAndActivities.then(array => { return array });
+
+    let routinesAndActivities = await attachActivitiesToRoutines(routines);
 
     console.log('routinesAndActivities =', routinesAndActivities)
 
@@ -72,29 +77,103 @@ async function getAllRoutines() {
 }
 
 async function getAllPublicRoutines() {
-  // try {
-  //   const { rows: routines } = await client.query(`
-  //       SELECT * FROM routines
-  //       WHERE "isPublic"=true
-  //     `)
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT 
+        routines.*,
+        users.username AS "creatorName"
+      FROM routines
+      JOIN users
+      ON routines."creatorId" = users.id
+      WHERE "isPublic" = true;
+    `)
 
-  //   console.log('routine ids are:', routines.id);
+    let routinesAndActivities = await attachActivitiesToRoutines(routines);
 
-  //   await
-  //   return routines;
+    return routinesAndActivities;
+  } catch (error) {
+    console.log('Error executing getAllPublicRoutines within routines.js');
+    throw error;
 
-  // } catch (error) {
-  //   console.log('Error executing getAllPublicRoutines within routines.js');
-  //   throw error;
-  // }
+  }
 
 }
 
-async function getAllRoutinesByUser({ username }) { }
+async function getAllRoutinesByUser({ username }) {
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT
+        routines.*,
+        users.username AS "creatorName"
+      FROM routines
+      JOIN users
+      ON routines."creatorId" = users.id
+      WHERE users.username = $1;
+    `, [username]);
 
-async function getPublicRoutinesByUser({ username }) { }
+    let routinesAndActivities = await attachActivitiesToRoutines(routines);
 
-async function getPublicRoutinesByActivity({ id }) { }
+    return routinesAndActivities;
+  } catch (error) {
+    console.log('Error executing getAllRoutinesByUser within routines.js');
+    throw error;
+  }
+
+}
+
+async function getPublicRoutinesByUser({ username }) {
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT
+        routines.*,
+        users.username AS "creatorName"
+      FROM routines
+      JOIN users
+      ON routines."creatorId" = users.id
+      WHERE users.username =$1
+      AND "isPublic" = true;
+    `, [username]);
+
+    let routinesAndActivities = await attachActivitiesToRoutines(routines);
+
+    //return routines <-- why was this still passing???
+    //it was a typo at first but still passed lol
+    return routinesAndActivities;
+  } catch (error) {
+    console.log('Error executing getPublicRoutinesByUser within routines.js');
+    throw error;
+  }
+
+}
+
+async function getPublicRoutinesByActivity({ id }) {
+  try {
+    const { rows: routines } = await client.query(`
+      SELECT
+        routines.*,
+        users.username AS "creatorName",
+        routine_activities."activityId"
+      FROM routines
+
+      JOIN users
+      ON routines."creatorId" = users.id
+
+      JOIN routine_activities
+      ON routines.id = routine_activities."routineId"
+
+      WHERE routine_activities."activityId"=$1
+      AND "isPublic" = true;
+    `, [id]);
+
+    let routinesAndActivities = await attachActivitiesToRoutines(routines);
+
+    return routinesAndActivities;
+  } catch (error) {
+    console.log('Error executing getPublicRoutinesByUser within routines.js');
+    throw error;
+  }
+
+}
 
 async function updateRoutine({ id, ...fields }) { }
 

@@ -70,22 +70,44 @@ async function getActivityByName(name) {
 
 async function attachActivitiesToRoutines(routines) {
   try {
-    let returnArr = [];
+
+    // console.log('initial routines are:', routines);
     for (let i = 0; i < routines.length; ++i) {
       const routine = routines[i];
-      const { rows: [activities] } = await client.query(`
-      SELECT * FROM routines
+      const { rows: activities } = await client.query(`
+      SELECT
+        activities.*,
+        routine_activities.id AS "routineActivityId",
+        routine_activities."routineId",
+        routine_activities.duration,
+        routine_activities.count
+      FROM activities
       JOIN routine_activities
-      ON routines.id = routine_activities."routineId"
-      WHERE routines.id = $1 
+      ON activities.id = routine_activities."activityId"
+      WHERE routine_activities."routineId" = $1; 
       `, [routine.id])
 
-      console.log('R + A =', activities);
+      // const { rows: activities } = await client.query(`
+      // SELECT * FROM activities
+      // JOIN routine_activities
+      // ON activities.id = routine_activities."activityId"
+      // WHERE routine_activities."routineId" = $1; 
+      // `, [routine.id])
 
-      returnArr.push(activities)
+
+      routine.activities = [];
+
+      for (let j = 0; j < activities.length; ++j) {
+        // console.log('activities are:', activities[j]);
+        routine.activities.push(activities[j]);
+        // console.log(routine.activities);
+      }
     }
+    // console.log('final routines are', routines);
 
-    console.log('returnArr is: ', returnArr);
+    return routines
+
+    // console.log('returnArr is: ', returnArr);
 
     //We can probably erase the below - just need to make sure we're returning this correctly in routines.js
     // SELECT * FROM activities
@@ -93,7 +115,8 @@ async function attachActivitiesToRoutines(routines) {
     // ON routine_activities."activityId" = activities.id
     // WHERE routine_activities."routineId"=$1
 
-    return returnArr;
+
+
   } catch (error) {
     console.log('Error attachingActivitiesToRoutines in activities.js');
     throw error;
