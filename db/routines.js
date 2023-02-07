@@ -1,5 +1,6 @@
 const client = require("./client");
-const { attachActivitiesToRoutines } = require('./activities.js')
+const { attachActivitiesToRoutines } = require('./activities.js');
+const { destroyRoutineActivity } = require('./routine_activities.js');
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
@@ -66,7 +67,6 @@ async function getAllRoutines() {
 
     let routinesAndActivities = await attachActivitiesToRoutines(routines);
 
-    console.log('routinesAndActivities =', routinesAndActivities)
 
     return routinesAndActivities;
 
@@ -177,7 +177,24 @@ async function getPublicRoutinesByActivity({ id }) {
 
 async function updateRoutine({ id, ...fields }) { }
 
-async function destroyRoutine(id) { }
+async function destroyRoutine(id) { 
+
+    
+  try { 
+    const {rows: [routine]} = await client.query(`
+    DELETE FROM routines
+    WHERE id=$1;
+  `,[id]);
+
+  let removeRoutineActivities = await destroyRoutineActivity(id);
+
+  return removeRoutineActivities;
+
+  } catch(error) {
+    console.log('Error removing the RoutineActivity for given ID:' , id);
+    throw error;
+  }
+}
 
 module.exports = {
   getRoutineById,
