@@ -10,7 +10,7 @@ const { JWT_SECRET = "neverTell" } = process.env;
 // This contains helper functions which create fake entries in the database
 // for the tests.
 
-const createFakeUser = async (username = faker.random.uuid()) => {
+const createFakeUser = async (username = faker.datatype.uuid()) => {
   const fakeUserData = {
     username,
     password: faker.internet.password(),
@@ -95,8 +95,8 @@ const createFakeUserWithRoutinesAndActivities = async (username, numRoutines = 1
 
 const createFakePublicRoutine = async (
   creatorId,
-  name = faker.random.uuid(),
-  goal = faker.random.uuid()
+  name = faker.datatype.uuid(),
+  goal = faker.datatype.uuid()
 ) => {
   if (!creatorId) {
     const fakeUser = await createFakeUser();
@@ -116,8 +116,8 @@ const createFakePublicRoutine = async (
 
 const createFakePrivateRoutine = async (
   creatorId,
-  name = faker.random.uuid(),
-  goal = faker.random.uuid()
+  name = faker.datatype.uuid(),
+  goal = faker.datatype.uuid()
 ) => {
   if (!creatorId) {
     const fakeUser = await createFakeUser();
@@ -136,8 +136,8 @@ const createFakePrivateRoutine = async (
 };
 
 const createFakeActivity = async (
-  name = faker.random.uuid(),
-  description = faker.random.uuid()
+  name = faker.datatype.uuid(),
+  description = faker.datatype.uuid()
 ) => {
   const activity = await createActivity({
     name,
@@ -161,8 +161,8 @@ const createFakeRoutineActivity = async (routineId, activityId) => {
   const fakeRoutineActivity = await addActivityToRoutine({
     activityId,
     routineId,
-    count: faker.random.number(),
-    duration: faker.random.number(),
+    count:  faker.datatype.number(),
+    duration:  faker.datatype.number(),
   });
   if (!fakeRoutineActivity) {
     throw new Error("addActivityToRoutine didn't return a routineActivity");
