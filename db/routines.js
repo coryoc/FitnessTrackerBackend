@@ -1,4 +1,5 @@
 const client = require("./client");
+const { attachActivitiesToRoutines } = require('./activities.js')
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
@@ -54,17 +55,40 @@ async function getRoutinesWithoutActivities() {
 async function getAllRoutines() {
   try {
     const { rows: routines } = await client.query(`
-      SELECT * FROM routines;
+      SELECT * FROM routines
     `)
 
-    return routines;
+    let routinesAndActivities = attachActivitiesToRoutines(routines);
+    routinesAndActivities.then(array => { return array });
+
+    console.log('routinesAndActivities =', routinesAndActivities)
+
+    return routinesAndActivities;
+
   } catch (error) {
     console.log('Error executing getAllRoutines within routines.js');
     throw error;
   }
 }
 
-async function getAllPublicRoutines() { }
+async function getAllPublicRoutines() {
+  // try {
+  //   const { rows: routines } = await client.query(`
+  //       SELECT * FROM routines
+  //       WHERE "isPublic"=true
+  //     `)
+
+  //   console.log('routine ids are:', routines.id);
+
+  //   await
+  //   return routines;
+
+  // } catch (error) {
+  //   console.log('Error executing getAllPublicRoutines within routines.js');
+  //   throw error;
+  // }
+
+}
 
 async function getAllRoutinesByUser({ username }) { }
 

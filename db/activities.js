@@ -69,11 +69,38 @@ async function getActivityByName(name) {
 }
 
 async function attachActivitiesToRoutines(routines) {
-  // select and return an array of all activities
+  try {
+    let returnArr = [];
+    for (let i = 0; i < routines.length; ++i) {
+      const routine = routines[i];
+      const { rows: [activities] } = await client.query(`
+      SELECT * FROM routines
+      JOIN routine_activities
+      ON routines.id = routine_activities."routineId"
+      WHERE routines.id = $1 
+      `, [routine.id])
+
+      console.log('R + A =', activities);
+
+      returnArr.push(activities)
+    }
+
+    console.log('returnArr is: ', returnArr);
+
+    //We can probably erase the below - just need to make sure we're returning this correctly in routines.js
+    // SELECT * FROM activities
+    // JOIN routine_activities 
+    // ON routine_activities."activityId" = activities.id
+    // WHERE routine_activities."routineId"=$1
+
+    return returnArr;
+  } catch (error) {
+    console.log('Error attachingActivitiesToRoutines in activities.js');
+    throw error;
+  }
 }
 
 async function updateActivity({ id, ...fields }) {
-  console.log('fields are:', fields)
 
   const setString = Object.keys(fields).map(
     (key, index) => `${key}=$${index + 1}`
