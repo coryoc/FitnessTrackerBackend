@@ -88,11 +88,15 @@ async function destroyRoutineActivity(id) {
   console.log('id is:', id)
 
   try {
-    const { rows: [routine_activity] } = await client.query(`
+    const { rows: [deletedRoutine] } = await client.query(`
     DELETE FROM routine_activities
-    WHERE id=$1;
-  `, [id]);
+    WHERE "routineId"=$1
+    RETURNING *;
+    
 
+    
+  `, [id]);
+    return deletedRoutine;
 
   } catch (error) {
     console.log('Error removing the RoutineActivity for given ID:', id);
