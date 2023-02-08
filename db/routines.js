@@ -27,7 +27,8 @@ async function getRoutineById(id) {
     const { rows: [routine] } = await client.query(`
       SELECT * FROM routines
       WHERE id=$1;
-    `, [id])
+    `, [id]);
+    return routine;
   } catch (error) {
     console.log('Error executing getRoutineById within routines.js');
     throw error;

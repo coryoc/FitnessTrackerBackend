@@ -1,4 +1,5 @@
 const client = require("./client");
+const { getRoutineById } = require('./routines');
 
 async function addActivityToRoutine({
   routineId,
@@ -85,7 +86,6 @@ async function updateRoutineActivity({ id, count, duration }) {
 }
 
 async function destroyRoutineActivity(id) {
-  console.log('id is:', id)
 
   try {
     const { rows: [deletedRoutine] } = await client.query(`
@@ -106,6 +106,19 @@ async function destroyRoutineActivity(id) {
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {
+  console.log(`routActID = ${routineActivityId} and userID = ${userId}`)
+
+  let routineActivity = await getRoutineActivityById( routineActivityId );
+
+
+  console.log(`${routineActivity.routineId}`);
+  //use routineActID to retreive .routineId from routine_activities
+
+
+    //let routine = await getRoutineById();
+  // use routineId to retreive .creatorId from routines before comparing to userId provided
+
+  // === then return true else return false
 
 }
 
