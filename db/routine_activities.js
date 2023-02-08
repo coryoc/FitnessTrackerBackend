@@ -38,17 +38,16 @@ async function getRoutineActivityById(id) {
     throw error;
   }
 
- }
+}
 
-async function getRoutineActivitiesByRoutine({ id }) { 
+async function getRoutineActivitiesByRoutine({ id }) {
 
-  let routineId = id ;
-  console.log(routineId);
   try {
-    const { rows: [routine_activity] } = await client.query(`
+    const { rows: routine_activity } = await client.query(`
       SELECT * FROM routine_activities
-      WHERE id=$1;
-    `, [ id ]);
+      WHERE "routineId"=$1;
+    `, [id]);
+
 
     return routine_activity;
 
@@ -61,44 +60,48 @@ async function getRoutineActivitiesByRoutine({ id }) {
 }
 
 async function updateRoutineActivity({ id, count, duration }) {
-  
 
-
-
+  // console.log('id is:', id)
+  // console.log('count is:', count)
+  // console.log('duration is:', duration)
 
   try {
-  const { rows: [routine_activity] } = await client.query(`
+    const { rows: [routine_activity] } = await client.query(`
     UPDATE routine_activities
-    SET count=$2, duration=$3
-    WHERE id=$1;
-    `,[id, count, duration]);
+    SET 
+      count=$2, 
+      duration=$3
+    WHERE id=$1
+    RETURNING *;
+    `, [id, count, duration]);
 
-  return routine_activity;
+    // console.log('returning activity is', routine_activity);
+    return routine_activity;
 
-} catch (error) {
-  console.log('Error updating routine_activity with ID:', id);
-  throw error;
-}}
-
-async function destroyRoutineActivity(id) {
-
-
-  try { 
-    const {rows: routine_activity } = await client.query(`
-    DELETE FROM routine_activities
-    WHERE id=$1;
-  `,[id]);
-
-  return id;
-
-  } catch(error) {
-    console.log('Error removing the RoutineActivity for given ID:' , id);
+  } catch (error) {
+    console.log('Error updating routine_activity with ID:', id);
     throw error;
   }
-  
 }
 
-async function canEditRoutineActivity(routineActivityId, userId) { 
+async function destroyRoutineActivity(id) {
+  console.log('id is:', id)
+
+  try {
+    const { rows: [routine_activity] } = await client.query(`
+    DELETE FROM routine_activities
+    WHERE id=$1;
+  `, [id]);
+
+
+  } catch (error) {
+    console.log('Error removing the RoutineActivity for given ID:', id);
+    throw error;
+  }
+
+}
+
+async function canEditRoutineActivity(routineActivityId, userId) {
 
 }
 
