@@ -1,6 +1,7 @@
 const client = require("./client");
 const { attachActivitiesToRoutines } = require('./activities.js');
-const { destroyRoutineActivity } = require('./routine_activities.js');
+const { destroyRoutineActivity, getRoutineActivitiesByRoutine } = require('./routine_activities.js');
+
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
@@ -176,23 +177,56 @@ async function getPublicRoutinesByActivity({ id }) {
 
 }
 
-async function updateRoutine({ id, ...fields }) { }
+async function updateRoutine({ id, ...fields }) {
+  const { isPublic, name, goal } = fields;
 
-async function destroyRoutine(id) { 
-
+  try {
+    const { rows: [routine_activity] } = await client.query(`
+    UPDATE routines
+    SET 
+      "isPublic" = COALESCE($2, "isPublic"), 
+      name  = COALESCE($3, name), 
+      goal = COALESCE($4, goal)
+    WHERE id=$1
     
-  try { 
-    const {rows: [routine]} = await client.query(`
+    RETURNING *;
+    `, [id, isPublic, name, goal]);
+
+
+    return routine_activity;
+
+  } catch (error) {
+    console.log('Error updating routine_activity with ID:', id);
+    throw error;
+  }
+
+}
+
+async function destroyRoutine(id) {
+  let fullRoutine = await getRoutineById(id);
+  console.log('fullRoutine is:', fullRoutine);
+  console.log('routine id is:', fullRoutine.id)
+
+  let routineActivities = await getRoutineActivitiesByRoutine(fullRoutine)
+
+  console.log('routineActivities are:', routineActivities);
+
+  for (let i = 0; i < routineActivities.length; ++i) {
+    let individualRoutineActivity = routineActivities[i];
+    let id = individualRoutineActivity.id;
+    await destroyRoutineActivity(id);
+  }
+
+  try {
+    const { rows: [routine] } = await client.query(`
     DELETE FROM routines
     WHERE id=$1;
-  `,[id]);
+  `, [id]);
 
-  let removeRoutineActivities = await destroyRoutineActivity(id);
+    return routine;
 
-  return removeRoutineActivities;
-
-  } catch(error) {
-    console.log('Error removing the RoutineActivity for given ID:' , id);
+  } catch (error) {
+    console.log('Error removing the RoutineActivity for given ID:', id);
     throw error;
   }
 }
