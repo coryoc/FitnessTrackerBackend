@@ -1,5 +1,5 @@
 const client = require("./client");
-const { getRoutineById } = require('./routines');
+// const { getRoutineById } = require('./routines.js');
 
 async function addActivityToRoutine({
   routineId,
@@ -86,16 +86,17 @@ async function updateRoutineActivity({ id, count, duration }) {
 }
 
 async function destroyRoutineActivity(id) {
+  console.log('id is:', id);
 
   try {
     const { rows: [deletedRoutine] } = await client.query(`
     DELETE FROM routine_activities
-    WHERE "routineId"=$1
+    WHERE id=$1
     RETURNING *;
     
-
-    
   `, [id]);
+
+    console.log('deletedRoutine is:', deletedRoutine);
     return deletedRoutine;
 
   } catch (error) {
@@ -105,21 +106,31 @@ async function destroyRoutineActivity(id) {
 
 }
 
+async function getRoutineById(id) {
+  try {
+    const { rows: [routine] } = await client.query(`
+      SELECT * FROM routines
+      WHERE id=$1;
+    `, [id]);
+    return routine;
+  } catch (error) {
+    console.log('Error executing getRoutineById within routines.js');
+    throw error;
+  }
+}
+
 async function canEditRoutineActivity(routineActivityId, userId) {
-  console.log(`routActID = ${routineActivityId} and userID = ${userId}`)
+  console.log(`routActID = ${routineActivityId} and userID = ${userId}`);
 
-  let routineActivity = await getRoutineActivityById( routineActivityId );
+  let routineActivity = await getRoutineActivityById(routineActivityId);
 
+  let routine = await getRoutineById(routineActivity.routineId);
 
-  console.log(`${routineActivity.routineId}`);
-  //use routineActID to retreive .routineId from routine_activities
+  console.log(`creatorID =  ${routine.creatorId}`);
 
-
-    //let routine = await getRoutineById();
-  // use routineId to retreive .creatorId from routines before comparing to userId provided
-
-  // === then return true else return false
-
+  if (routine.creatorId === userId) {
+    return true;
+  }
 }
 
 module.exports = {
