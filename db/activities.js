@@ -34,7 +34,6 @@ async function getAllActivities() {
     console.log('Error executing getAllActivities within activities.js');
     throw error;
   }
-
 }
 
 async function getActivityById(id) {
