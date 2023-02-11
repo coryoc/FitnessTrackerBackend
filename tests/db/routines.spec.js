@@ -122,8 +122,8 @@ describe("DB Routines", () => {
       const routine = await createRoutine({
         creatorId: user.id,
         isPublic: true,
-        name: faker.datatype.uuid(),
-        goal: faker.datatype.uuid(),
+        name: faker.random.uuid(),
+        goal: faker.random.uuid(),
       });
       expect(routine).toEqual(
         objectContaining({
@@ -414,8 +414,8 @@ describe("DB Routines", () => {
       const updatedRoutine = await updateRoutine({
         id: fakeRoutine.id,
         isPublic: false,
-        name: faker.datatype.uuid(),
-        goal: faker.datatype.uuid(),
+        name: faker.random.uuid(),
+        goal: faker.random.uuid(),
       });
 
       expect(updatedRoutine.id).toEqual(fakeRoutine.id);
@@ -424,8 +424,8 @@ describe("DB Routines", () => {
     it("Updates the public status, name, or goal, as necessary", async () => {
       const fakeRoutine = await createFakePublicRoutine();
 
-      const name = faker.datatype.uuid();
-      const goal = faker.datatype.uuid();
+      const name = faker.random.uuid();
+      const goal = faker.random.uuid();
 
       const updatedRoutine = await updateRoutine({
         id: fakeRoutine.id,
@@ -441,7 +441,7 @@ describe("DB Routines", () => {
 
     it("Does not update fields that are not passed in", async () => {
       const fakeRoutine = await createFakePublicRoutine();
-      const name = faker.datatype.uuid();
+      const name = faker.random.uuid();
       const updatedRoutine = await updateRoutine({
         id: fakeRoutine.id,
         name,

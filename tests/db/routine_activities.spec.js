@@ -39,8 +39,8 @@ describe("DB Routine Activities", () => {
     routineActivityData = {
       routineId: fakeRoutine.id,
       activityId: fakeActivity.id,
-      count: faker.datatype.number(),
-      duration: faker.datatype.number(),
+      count: faker.random.number(),
+      duration: faker.random.number(),
     };
   });
 
@@ -94,8 +94,8 @@ describe("DB Routine Activities", () => {
 
       const newRoutineActivityData = {
         id: fakeRoutineActivity.id,
-        count: faker.datatype.number(),
-        duration: faker.datatype.number(),
+        count: faker.random.number(),
+        duration: faker.random.number(),
       };
       const updatedRoutineActivity = await updateRoutineActivity(
         newRoutineActivityData
