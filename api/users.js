@@ -2,12 +2,12 @@
 const express = require("express");
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
+const { TOKEN_SECRET = 'hush' } = process.env;
 
 const { createUser, getUser, getUserById, getUserByUsername } = require('../db');
 
 const { PasswordTooShortError, UserTakenError } = require('../errors');
 
-const { TOKEN_SECRET = 'hush' } = process.env;
 
 // POST /api/users/register
 // usersRouter.post('/register', async (req, res, next) => {
@@ -54,24 +54,26 @@ usersRouter.post('/register', async (req, res, next) => {
     const { username, password } = req.body;
 
     try {
-        console.log('username is:', username)
-        console.log('password is:', password)
+        // console.log('username is:', username)
+        // console.log('password is:', password)
 
         const userCheck = await getUserByUsername(username);
 
-        console.log('usercheck is:', userCheck)
+        // console.log('usercheck is:', userCheck)
 
         if (userCheck) {
-            next({
-                error: 'UserTakenError',
-                message: 'UserTakenError(username)',
-                name: `${username}`
+            res.send({
+                name: `${username}`,
+                message: UserTakenError(username),
+                error: 'UserTakenError'
             });
-        } else if (password.length < 8) {
-            next({
+        }
+
+        if (password.length < 8) {
+            res.send({
+                name: `:[`,
                 error: 'PasswordTooShort!',
-                message: PasswordTooShortError(),
-                name: `:[`
+                message: PasswordTooShortError()
             });
         }
 
@@ -80,27 +82,25 @@ usersRouter.post('/register', async (req, res, next) => {
             password
         });
 
-        if (!newUser) {
-            next({
-                error: 'asdfsdd',
-                message: 'sdfasdf',
-                name: 'dsfasdf'
-            })
-        } else {
-            res.send({
-                message: 'thank you for singing up',
-                token: 'dfasdfasd',
-                user: newUser
-            });
-        }
+
+        const token = jwt.sign({
+            id: newUser.id,
+            username: newUser.username,
+        }, TOKEN_SECRET, {
+            expiresIn: '1w'
+        });
+
+        console.log('token is:', token)
+        console.log('newUser is:', newUser);
+
+        res.send({
+            message: 'thank you for singing up',
+            token: token,
+            user: newUser
+        });
 
 
-        // const token = jwt.sign({
-        //     id: newUser.id,
-        //     username
-        // }, process.env.TOKEN_SECRET, {
-        //     expiresIn: '1d'
-        // });
+
 
         console.log('newUser is:', newUser);
 
