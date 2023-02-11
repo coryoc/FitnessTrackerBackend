@@ -134,7 +134,7 @@ describe("/api/users", () => {
   });
 
   describe("POST /api/users/login", () => {
-    xit("Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password.", async () => {
+    it("Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password.", async () => {
       // Create some fake user data
       const userData = {
         username: faker.internet.userName(),
@@ -156,7 +156,7 @@ describe("/api/users", () => {
       );
     });
 
-    xit("Logs in the user and returns the user back to us", async () => {
+    it("Logs in the user and returns the user back to us", async () => {
       // Create some fake user data
       const userData = {
         username: faker.internet.userName(),
@@ -177,7 +177,7 @@ describe("/api/users", () => {
       });
     });
 
-    xit("Returns a JSON Web Token. Stores the id and username in the token.", async () => {
+    it("Returns a JSON Web Token. Stores the id and username in the token.", async () => {
       const userData = {
         username: faker.internet.userName(),
         password: faker.internet.password(),
@@ -224,7 +224,7 @@ describe("/api/users", () => {
   });
 
   describe("GET /api/users/:username/routines", () => {
-    xit("Gets a list of public routines for a particular user.", async () => {
+    it("Gets a list of public routines for a particular user.", async () => {
       // Create a fake user with a bunch of routines associated
       const { fakeUser, token } = await createFakeUserWithRoutinesAndActivities(
         "Greg"
@@ -244,7 +244,7 @@ describe("/api/users", () => {
       expect(response.body).toEqual([...routinesFromDB]);
     });
 
-    xit("gets a list of all routines for the logged in user", async () => {
+    it("gets a list of all routines for the logged in user", async () => {
       const { fakeUser, token } = await createFakeUserWithRoutinesAndActivities(
         "Angela"
       );
