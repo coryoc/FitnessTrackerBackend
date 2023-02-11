@@ -2,11 +2,11 @@
 const express = require("express");
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
-const { TOKEN_SECRET = 'hush' } = process.env;
+const { TOKEN_SECRET } = process.env;
 
 const { createUser, getUser, getUserById, getUserByUsername } = require('../db');
 
-const { PasswordTooShortError, UserTakenError } = require('../errors');
+const { PasswordTooShortError, UserTakenError, UnauthorizedError } = require('../errors');
 
 
 // POST /api/users/register
@@ -82,6 +82,9 @@ usersRouter.post('/register', async (req, res, next) => {
             password
         });
 
+        console.log('newUser is:', newUser);
+        console.log('TOKEN_SECRET is:', TOKEN_SECRET);
+
         const token = jwt.sign({
             id: newUser.id,
             username: newUser.username,
@@ -98,7 +101,7 @@ usersRouter.post('/register', async (req, res, next) => {
             user: newUser
         });
 
-        console.log('newUser is:', newUser);
+        // console.log('newUser is:', newUser);
 
     } catch ({ error, message, name }) {
         next(error, message, name);
@@ -109,31 +112,62 @@ usersRouter.post('/register', async (req, res, next) => {
 
 // GET /api/users/me
 usersRouter.get('/users/me', async (req, res, next) => {
-    const prefix = 'Bearer ';
-    const auth = req.header('Authorization');
+    // console.log('request body is:', req);
 
-    if (!auth) {
-        next();
-    } else if (auth.startsWith(prefix)) {
-        const token = auth.slice(prefix.length);
-        try {
-            const { id } = jwt.verify(token, TOKEN_SECRET);
+    const { username, password } = req.body
 
-            if (id) {
-                req.user = getUserById(id);
-                next();
-            }
-        } catch (error) {
-            next(error)
-        }
-    } else {
-        next({
-            name: 'AuthorizationHeaderError',
-            message: `Authorization token must start with ${prefix}`
-        });
+    try {
+        console.log('username is:', username)
+        console.log('password is:', password)
+
+    } catch (error) {
+        res.status(401).send({
+            name: `:[`,
+            error: "you're not logged in...",
+            message: UnauthorizedError()
+        })
     }
+
 }
 );
+// usersRouter.get('/users/me', async (req, res, next) => {
+//     // console.log('request body is:', req);
+
+//     const { username, password } = req.body
+
+//     console.log('username is:', username)
+//     console.log('password is:', password)
+
+//     const prefix = 'Bearer ';
+//     const auth = req.header('Authorization');
+
+//     if (!auth) {
+//         res.status(401).send({
+//             name: `:[`,
+//             error: "you're not logged in...",
+//             message: UnauthorizedError()
+//         })
+//     } else if (auth.startsWith(prefix)) {
+//         const token = auth.slice(prefix.length);
+//         console.log('authorized token is:', token)
+//         try {
+//             const { id } = jwt.verify(token, TOKEN_SECRET);
+
+//             if (id) {
+//                 req.user = await getUserById(id);
+//                 res.send(req)
+//             }
+//         } catch (error) {
+//             next(error)
+//         }
+//     } else {
+//         next({
+//             name: 'AuthorizationHeaderError',
+//             message: `Authorization token must start with ${prefix}`
+//         });
+//     }
+// }
+// );
 
 // GET /api/users/:username/routines
 
