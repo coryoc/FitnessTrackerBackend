@@ -82,7 +82,6 @@ usersRouter.post('/register', async (req, res, next) => {
             password
         });
 
-
         const token = jwt.sign({
             id: newUser.id,
             username: newUser.username,
@@ -99,20 +98,42 @@ usersRouter.post('/register', async (req, res, next) => {
             user: newUser
         });
 
-
-
-
         console.log('newUser is:', newUser);
-
 
     } catch ({ error, message, name }) {
         next(error, message, name);
-    }
-})
+    };
+});
 
 // POST /api/users/login
 
 // GET /api/users/me
+usersRouter.get('/users/me', async (req, res, next) => {
+    const prefix = 'Bearer ';
+    const auth = req.header('Authorization');
+
+    if (!auth) {
+        next();
+    } else if (auth.startsWith(prefix)) {
+        const token = auth.slice(prefix.length);
+        try {
+            const { id } = jwt.verify(token, TOKEN_SECRET);
+
+            if (id) {
+                req.user = getUserById(id);
+                next();
+            }
+        } catch (error) {
+            next(error)
+        }
+    } else {
+        next({
+            name: 'AuthorizationHeaderError',
+            message: `Authorization token must start with ${prefix}`
+        });
+    }
+}
+);
 
 // GET /api/users/:username/routines
 
