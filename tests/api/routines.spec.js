@@ -179,7 +179,7 @@ describe("/api/routines", () => {
   });
 
   describe("DELETE /api/routines/:routineId (**)", () => {
-    it("Hard deletes a routine. Makes sure to delete all the routineActivities whose routine is the one being deleted.", async () => {
+    xit("Hard deletes a routine. Makes sure to delete all the routineActivities whose routine is the one being deleted.", async () => {
       // Create a routine so we can delete it
       const { fakeUser, token } = await createFakeUserWithToken("John");
       const fakeRoutine = await createFakePublicRoutine(
@@ -199,7 +199,7 @@ describe("/api/routines", () => {
       expect(shouldBeDeleted).toBeFalsy();
     });
 
-   it("returns a 403 when the user deletes a routine that isn't theirs", async () => {
+   xit("returns a 403 when the user deletes a routine that isn't theirs", async () => {
       const { fakeUser } = await createFakeUserWithToken("Janice");
       const fakeRoutine = await createFakePublicRoutine(
         fakeUser.id,

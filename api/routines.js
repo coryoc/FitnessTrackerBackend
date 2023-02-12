@@ -12,9 +12,10 @@ const { getRoutineById,
     getPublicRoutinesByActivity,
     createRoutine,
     updateRoutine,
-    destroyRoutine, } = require('../db');
+    destroyRoutine, addActivityToRoutine, getActivityById, getRoutineActivitiesByRoutine, 
+} = require('../db');
 
-    const { PasswordTooShortError, UserTakenError, UnauthorizedError, UnauthorizedUpdateError, UnauthorizedDeleteError } = require('../errors');
+    const { PasswordTooShortError, UserTakenError, UnauthorizedError, UnauthorizedUpdateError, UnauthorizedDeleteError, DuplicateRoutineActivityError } = require('../errors');
 
 
 // GET /api/routines
@@ -219,5 +220,70 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
 });
 
 // POST /api/routines/:routineId/activities
+
+
+
+routinesRouter.post('/:routineId/activities', async (req, res, next) => {
+
+
+
+
+    const { routineId, activityId, count, duration } = req.body;
+
+
+    console.log('count :', count);
+    console.log('duration:', duration);
+
+    
+
+    try {
+    
+        let dupRoutine = await getRoutineById(routineId);
+
+        let dupRoutineActivities = await getRoutineActivitiesByRoutine(dupRoutine);
+
+        let dupActivities = await getActivityById(activityId);
+
+
+        console.log('routineId:', routineId);
+        // console.log("dupRoutine:", dupRoutine);
+        // console.log("dupRoutine.id:", dupRoutine.id);
+
+        console.log('activityId :', activityId);
+        // console.log(" dupActivities:",  dupActivities);
+        console.log("dupRoutineActivities:", dupRoutineActivities);
+
+        const match =  dupRoutineActivities.map(obj => {
+            if (obj.activityId === activityId) {
+                return true;
+            } else {return false;}
+        } );
+
+        let x = dupRoutineActivities[0];
+        console.log("x", x.activityId);
+
+
+            if ( x.activityId === activityId) {
+             res.send({
+                error: 'Invalid login!',
+                message:DuplicateRoutineActivityError(activityId, routineId),
+                name: `:[`,
+
+             })
+            } else {
+
+            let newRoutineActivity = await addActivityToRoutine({  routineId, activityId, count, duration  });
+            console.log('newRoutineActivity is:', newRoutineActivity);
+
+            res.send(newRoutineActivity);
+            }
+        }
+           
+        catch ({ error, message, name }) {
+        next(error, message, name)
+    }
+
+});
+
 
 module.exports = routinesRouter;
