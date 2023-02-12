@@ -122,31 +122,23 @@ async function attachActivitiesToRoutines(routines) {
   }
 }
 
-async function updateActivity({ id, ...fields }) {
-
-  const setString = Object.keys(fields).map(
-    (key, index) => `${key}=$${index + 1}`
-  ).join(`, `);
-
-  if (setString.length === 0) {
-    return;
-  }
-
-
-  // const { name, description } = fields;
-
-  // console.log('name is:', name);
-  // console.log('description is:', description);
-
+async function updateActivity({ id, name, description }) {
 
   try {
+    // console.log('id is:', id)
+    // console.log('name is:', name)
+    // console.log('description is', description)
+
     const { rows: [activities] } = await client.query(`
       UPDATE activities
-      SET ${setString}
-      WHERE id=${id}
+      SET
+        name= COALESCE($2, name),
+        description= COALESCE($3, description)
+      WHERE id=$1
       RETURNING *;
-    `, Object.values(fields));
+    `, [id, name, description]);
 
+    // console.log('activities are:', activities);
 
     return activities
 
@@ -155,6 +147,41 @@ async function updateActivity({ id, ...fields }) {
     throw error;
   }
 }
+
+// async function updateActivity({ id, ...fields }) {
+
+//   const setString = Object.keys(fields).map(
+//     (key, index) => `${key}=$${index + 1}`
+//   ).join(`, `);
+
+//   if (setString.length === 0) {
+//     return;
+//   }
+
+//   // const { name, description } = fields;
+
+//   // console.log('name is:', name);
+//   // console.log('description is:', description);
+
+
+//   try {
+//     console.log('setString is:', setString);
+//     console.log('Object values are:', Object.values(fields));
+//     const { rows: [activities] } = await client.query(`
+//       UPDATE activities
+//       SET ${setString}
+//       WHERE id=${id}
+//       RETURNING *;
+//     `, Object.values(fields));
+
+
+//     return activities
+
+//   } catch (error) {
+//     console.log('Error executing updateActivity within activities.js');
+//     throw error;
+//   }
+// }
 
 module.exports = {
   getAllActivities,
