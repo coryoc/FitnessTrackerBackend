@@ -36,40 +36,41 @@ routinesRouter.post('/', async (req, res, next) => {
     // console.log('goal :', goal);
     // console.log('ispublic :', isPublic);
 
+    if (!auth) {
+
+        res.send(    {
+            
+            error: 'Invalid login!',
+            message: UnauthorizedError(),
+            name: `:[`,
+        });
+    }
+
+
+    
 
     try {
         const token = auth.slice(prefix.length);
 
-        // console.log('token is:', token);
+        console.log('token is:', token);
         const { id } = jwt.verify(token, JWT_SECRET);
     
 
         let creatorId = Number(id);
-        // console.log('id is:', id);
-        // console.log('creatorId is:', creatorId);
+        console.log('id is:', id);
+        console.log('creatorId is:', creatorId);
 
+    console.log('creatorId type is:',typeof creatorId);
 
-
-
-
-
+ 
         if (id) {
             let newRoutine = await createRoutine({ creatorId, isPublic, name, goal });
-            // console.log('newRoutine is:', newRoutine);
+            console.log('newRoutine is:', newRoutine);
 
             res.send(newRoutine);
         }
-
-    
-        else {
-
-           res.send( {
-                
-                error: 'Invalid login!',
-                message: UnauthorizedError(),
-                name: `:[`,
-            })
-        }
+           
+       
 
     } catch ({ error, message, name }) {
         next(error, message, name)
@@ -82,26 +83,38 @@ routinesRouter.post('/', async (req, res, next) => {
 routinesRouter.patch('/:routineId', async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
+
     
     const {routineId} = req.params;
     const {isPublic, name, goal} = req.body;
     
+    if (!auth) {
+
+        res.send(    {
+            
+            error: 'Invalid login!',
+            message: UnauthorizedError(),
+            name: `:[`,
+        });
+    }
 
     
-    console.log('routineID is', routineId);
-    console.log('routineID is', typeof routineId);
+    // console.log('routineID is', routineId);
+    // console.log('routineID is', typeof routineId);
 
 
-    console.log('isPublic is', isPublic);
-    console.log('name is', name);
-    console.log('goal is', goal);
+    // console.log('isPublic is', isPublic);
+    // console.log('name is', name);
+    // console.log('goal is', goal);
 
-
+ 
 
     let routineToUpdate = await getRoutineById(routineId);
 
-    console.log('routineToUpdate is', routineToUpdate);
-   
+    // console.log('routineToUpdate is', routineToUpdate);
+
+
+
     try {
         const token = auth.slice(prefix.length);
 
@@ -109,17 +122,20 @@ routinesRouter.patch('/:routineId', async (req, res, next) => {
         const { id, username } = jwt.verify(token, JWT_SECRET);
         const jwtUserId = id;
         const routineCreatorId = routineToUpdate.creatorId;
-        console.log('userIdis',jwtUserId);
-        console.log('goal is', routineCreatorId);
-    
-       
+        // console.log('userIdis',jwtUserId);
+        // console.log('goal is', routineCreatorId);
+
+
 
         if (jwtUserId  === routineCreatorId) {
 
             const id = Number(routineId);
-            let  updatedRoutine = await updateRoutine({ id, isPublic, name, goal });
+            let updatedRoutine = await updateRoutine({ id, isPublic, name, goal });
             console.log('newRoutine is:', updatedRoutine);
+
+            res.send(updatedRoutine)
         }
+       
 
         else {
             res.status(403)
@@ -147,23 +163,19 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
     const auth = req.header('Authorization');
     
     const {routineId} = req.params;
-    const {isPublic, name, goal} = req.body;
+ 
     
 
     
-    console.log('routineID is', routineId);
-    console.log('routineID is', typeof routineId);
+    // console.log('routineID is', routineId);
+    // console.log('routineID type is', typeof routineId);
 
-
-    console.log('isPublic is', isPublic);
-    console.log('name is', name);
-    console.log('goal is', goal);
 
 
 
     let routineToDelete = await getRoutineById(routineId);
 
-    console.log('routineToUpdate is', routineToDelete);
+    // console.log('routineToDelete is', routineToDelete);
    
     try {
         const token = auth.slice(prefix.length);
@@ -172,23 +184,21 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
         const { id, username } = jwt.verify(token, JWT_SECRET);
         const jwtUserId = id;
         const routineCreatorId = routineToDelete.creatorId;
-        console.log('userIdis',jwtUserId);
-        console.log('goal is', routineCreatorId);
+       
+        // console.log('jwtUserIdis',jwtUserId);
+        // console.log('routineCreatorId is', routineCreatorId);
     
        
 
         if (jwtUserId  === routineCreatorId) {
 
             const id = Number(routineId);
-            let destroyRoutine = destroyRoutine({ id });
-            console.log('destroyedRoutine is:', destroyRoutine);
+            // console.log('routineId as a number is', id);
 
-            res.send( {
-                 
-                error: 'Invalid login!',
-                message: UnauthorizedDeleteError(username, routineToDelete.name),
-                name: `:[`,
-            })
+            let destroyedRoutine = destroyRoutine( id);
+            // console.log('destroyedRoutine is:', destroyedRoutine);
+
+            res.send( destroyedRoutine )
         }
 
         else {
