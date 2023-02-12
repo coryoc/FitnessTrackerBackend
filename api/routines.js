@@ -96,7 +96,7 @@ routinesRouter.patch('/:routineId', async (req, res, next) => {
             message: UnauthorizedError(),
             name: `:[`,
         });
-    }
+    } else {
 
     
     // console.log('routineID is', routineId);
@@ -151,7 +151,7 @@ routinesRouter.patch('/:routineId', async (req, res, next) => {
         next(error, message, name)
     }
 
-    
+}
 });
 
 
@@ -193,10 +193,10 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
         if (jwtUserId  === routineCreatorId) {
 
             const id = Number(routineId);
-            // console.log('routineId as a number is', id);
+            console.log('routineId as a number is', id);
 
-            let destroyedRoutine = destroyRoutine( id);
-            // console.log('destroyedRoutine is:', destroyedRoutine);
+            let destroyedRoutine =await  destroyRoutine( id);
+            console.log('destroyedRoutine is:', destroyedRoutine);
 
             res.send( destroyedRoutine )
         }
