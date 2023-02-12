@@ -207,7 +207,7 @@ async function destroyRoutine(id) {
   console.log('fullRoutine is:', fullRoutine);
   console.log('routine id is:', fullRoutine.id)
 
-  let routineActivities = await getRoutineActivitiesByRoutine(fullRoutine)
+  let routineActivities = await getRoutineActivitiesByRoutine(fullRoutine);
 
   console.log('routineActivities are:', routineActivities);
 
@@ -220,7 +220,8 @@ async function destroyRoutine(id) {
   try {
     const { rows: [routine] } = await client.query(`
     DELETE FROM routines
-    WHERE id=$1;
+    WHERE id=$1
+    RETURNING *;
   `, [id]);
 
     return routine;
