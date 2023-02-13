@@ -33,10 +33,6 @@ routinesRouter.post('/', async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
 
-    // console.log('name :', name);
-    // console.log('goal :', goal);
-    // console.log('ispublic :', isPublic);
-
     if (!auth) {
 
         res.send({
@@ -47,31 +43,17 @@ routinesRouter.post('/', async (req, res, next) => {
         });
     }
 
-
-
-
     try {
         const token = auth.slice(prefix.length);
-
-        console.log('token is:', token);
         const { id } = jwt.verify(token, JWT_SECRET);
 
-
         let creatorId = Number(id);
-        console.log('id is:', id);
-        console.log('creatorId is:', creatorId);
-
-        console.log('creatorId type is:', typeof creatorId);
-
 
         if (id) {
             let newRoutine = await createRoutine({ creatorId, isPublic, name, goal });
-            console.log('newRoutine is:', newRoutine);
 
             res.send(newRoutine);
         }
-
-
 
     } catch ({ error, message, name }) {
         next(error, message, name)
@@ -80,11 +62,9 @@ routinesRouter.post('/', async (req, res, next) => {
 });
 
 // PATCH /api/routines/:routineId
-
 routinesRouter.patch('/:routineId', async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
-
 
     const { routineId } = req.params;
     const { isPublic, name, goal } = req.body;
@@ -98,45 +78,22 @@ routinesRouter.patch('/:routineId', async (req, res, next) => {
             name: `:[`,
         });
     } else {
-
-
-        // console.log('routineID is', routineId);
-        // console.log('routineID is', typeof routineId);
-
-
-        // console.log('isPublic is', isPublic);
-        // console.log('name is', name);
-        // console.log('goal is', goal);
-
-
-
         let routineToUpdate = await getRoutineById(routineId);
-
-        // console.log('routineToUpdate is', routineToUpdate);
-
-
 
         try {
             const token = auth.slice(prefix.length);
 
-            // console.log('token is:', token);
             const { id, username } = jwt.verify(token, JWT_SECRET);
             const jwtUserId = id;
             const routineCreatorId = routineToUpdate.creatorId;
-            // console.log('userIdis',jwtUserId);
-            // console.log('goal is', routineCreatorId);
-
-
 
             if (jwtUserId === routineCreatorId) {
 
                 const id = Number(routineId);
                 let updatedRoutine = await updateRoutine({ id, isPublic, name, goal });
-                console.log('newRoutine is:', updatedRoutine);
 
                 res.send(updatedRoutine)
             }
-
 
             else {
                 res.status(403)
@@ -157,39 +114,20 @@ routinesRouter.patch('/:routineId', async (req, res, next) => {
 
 
 // DELETE /api/routines/:routineId
-
-
 routinesRouter.delete('/:routineId', async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
 
     const { routineId } = req.params;
 
-
-
-
-    // console.log('routineID is', routineId);
-    // console.log('routineID type is', typeof routineId);
-
-
-
-
     let routineToDelete = await getRoutineById(routineId);
 
-    // console.log('routineToDelete is', routineToDelete);
 
     try {
         const token = auth.slice(prefix.length);
-
-        // console.log('token is:', token);
         const { id, username } = jwt.verify(token, JWT_SECRET);
         const jwtUserId = id;
         const routineCreatorId = routineToDelete.creatorId;
-
-        // console.log('jwtUserIdis',jwtUserId);
-        // console.log('routineCreatorId is', routineCreatorId);
-
-
 
         if (jwtUserId === routineCreatorId) {
 
@@ -220,9 +158,6 @@ routinesRouter.delete('/:routineId', async (req, res, next) => {
 });
 
 // POST /api/routines/:routineId/activities
-
-
-
 routinesRouter.post('/:routineId/activities', async (req, res, next) => {
 
     const { routineId } = req.params
@@ -236,11 +171,8 @@ routinesRouter.post('/:routineId/activities', async (req, res, next) => {
     }
 
     function duplicateHelper(routine_act) {
-        console.log('routine_act is', routine_act);
-
         for (let i = 0; i < routine_act.length; ++i) {
             let curRoutAct = routine_act[i]
-            console.log('curRoutAct is:', curRoutAct);
 
             if (curRoutAct.activityId === fields.activityId) {
                 res.send({
@@ -255,7 +187,6 @@ routinesRouter.post('/:routineId/activities', async (req, res, next) => {
     }
 
     try {
-
         const routine = await getRoutineById(routineId)
         const routine_act = await getRoutineActivitiesByRoutine(routine)
 

@@ -12,22 +12,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors())
 
-
-
 app.use('/api', router);
-
-// app.use((error, req, res, next) => {
-//     if (error) {
-//         res.send({
-//             ...error
-//         })
-//     }
-//     next();
-// })
-
-// app.get('*', (req, res) => {
-//     res.status(404).send({ error: '404 - Not Found', message: 'No route found for the requested URL' });
-// });
 
 
 app.use((req, res, next) => {

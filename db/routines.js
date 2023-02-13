@@ -18,7 +18,6 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
     return routines;
 
   } catch (error) {
-    console.log('Error executing createRoutine within routines.js');
     throw error;
   }
 }
@@ -31,7 +30,6 @@ async function getRoutineById(id) {
     `, [id]);
     return routine;
   } catch (error) {
-    console.log('Error executing getRoutineById within routines.js');
     throw error;
   }
 }
@@ -50,7 +48,6 @@ async function getRoutinesWithoutActivities() {
 
     return routines;
   } catch (error) {
-    console.log('Error executing getRoutinesWithoutActivities within routines.js');
     throw error;
   }
 }
@@ -66,14 +63,11 @@ async function getAllRoutines() {
       ON routines."creatorId" = users.id;
     `)
 
-
     let routinesAndActivities = await attachActivitiesToRoutines(routines);
-
 
     return routinesAndActivities;
 
   } catch (error) {
-    console.log('Error executing getAllRoutines within routines.js');
     throw error;
   }
 }
@@ -94,7 +88,6 @@ async function getAllPublicRoutines() {
 
     return routinesAndActivities;
   } catch (error) {
-    console.log('Error executing getAllPublicRoutines within routines.js');
     throw error;
 
   }
@@ -117,7 +110,6 @@ async function getAllRoutinesByUser({ username }) {
 
     return routinesAndActivities;
   } catch (error) {
-    console.log('Error executing getAllRoutinesByUser within routines.js');
     throw error;
   }
 
@@ -138,11 +130,8 @@ async function getPublicRoutinesByUser({ username }) {
 
     let routinesAndActivities = await attachActivitiesToRoutines(routines);
 
-    //return routines <-- why was this still passing???
-    //it was a typo at first but still passed lol
     return routinesAndActivities;
   } catch (error) {
-    console.log('Error executing getPublicRoutinesByUser within routines.js');
     throw error;
   }
 
@@ -171,7 +160,6 @@ async function getPublicRoutinesByActivity({ id }) {
 
     return routinesAndActivities;
   } catch (error) {
-    console.log('Error executing getPublicRoutinesByUser within routines.js');
     throw error;
   }
 
@@ -192,11 +180,9 @@ async function updateRoutine({ id, ...fields }) {
     RETURNING *;
     `, [id, isPublic, name, goal]);
 
-
     return routine_activity;
 
   } catch (error) {
-    console.log('Error updating routine_activity with ID:', id);
     throw error;
   }
 
@@ -204,12 +190,7 @@ async function updateRoutine({ id, ...fields }) {
 
 async function destroyRoutine(id) {
   let fullRoutine = await getRoutineById(id);
-  console.log('fullRoutine is:', fullRoutine);
-  console.log('routine id is:', fullRoutine.id)
-
   let routineActivities = await getRoutineActivitiesByRoutine(fullRoutine);
-
-  console.log('routineActivities are:', routineActivities);
 
   for (let i = 0; i < routineActivities.length; ++i) {
     let individualRoutineActivity = routineActivities[i];
@@ -227,7 +208,6 @@ async function destroyRoutine(id) {
     return routine;
 
   } catch (error) {
-    console.log('Error removing the RoutineActivity for given ID:', id);
     throw error;
   }
 }

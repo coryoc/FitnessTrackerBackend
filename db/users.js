@@ -18,13 +18,10 @@ async function createUser({ username, password }) {
     return users;
 
   } catch (error) {
-    console.log('Error executing createUser from users.js');
     throw error;
   }
 
 }
-
-
 
 async function getUser({ username, password }) {
   const selectedUser = await getUserByUsername(username);
@@ -32,13 +29,7 @@ async function getUser({ username, password }) {
   const selectedUsername = selectedUser.username
   const hashedPassword = selectedUser.password
 
-  // console.log('user is:', selectedUsername)
-
-  // console.log('password is:', password);
-  // console.log('hashedPassword is:', hashedPassword);
-
   let passwordsMatch = await bcrypt.compare(password, hashedPassword)
-  // console.log('passwordsMatch?', passwordsMatch);
 
   if (passwordsMatch) {
     try {
@@ -51,14 +42,9 @@ async function getUser({ username, password }) {
       return user;
 
     } catch (error) {
-      console.log('Error executing getUser from users.js');
       throw error;
     }
   }
-
-  //fixed the issue, if passwords don't match, this should do nothing per the test
-  //I was throwing an error which the test counted as a return
-
 }
 
 async function getUserById(userId) {
@@ -71,7 +57,6 @@ async function getUserById(userId) {
     return user;
 
   } catch (error) {
-    console.log('Error executing getUserById from users.js');
     throw error;
   }
 
@@ -87,7 +72,6 @@ async function getUserByUsername(userName) {
     return user;
 
   } catch (error) {
-    console.log('Error executing getUserByUsername from users.js');
     throw error;
   }
 

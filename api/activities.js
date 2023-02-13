@@ -6,20 +6,17 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
 // GET /api/activities/:activityId/routines
-
 activitiesRouter.get("/:activityId/routines", async (req, res, next) => {
     const { activityId } = req.params;
     const id = activityId;
-    //Get the activity by id to see if it exists
     const originalActivity = await getActivityById(id);
 
     try {
-        //If the acitivty exists get all public routines where it is used
         if (originalActivity) {
             const routines = await getPublicRoutinesByActivity({ id });
             res.send(routines);
         }
-        //If the acitivity does not exist send error
+
         if (!originalActivity) {
             res.status(401)
             res.send({
@@ -31,30 +28,7 @@ activitiesRouter.get("/:activityId/routines", async (req, res, next) => {
     }
 });
 
-// activitiesRouter.get("/:activityId/routines", async (req, res, next) => {
-
-//     const { activityId } = req.params;
-//     console.log(activityId);
-//     const convertedActId = +activityId;
-//     console.log("convertedActId type is", typeof(convertedActId));
-
-//     try {
-//         console.log("convertedActID is", convertedActId);
-//         let publicIdByAct = await getPublicRoutinesByActivity({activityId});
-//         console.log("publicIdByAct is", publicIdByAct);
-
-//     res.send(
-//         publicIdByAct
-//     )
-//     }catch ({ error, message, name }) {
-//         next(error, message, name)
-//     }
-// });
-
-
-
 // GET /api/activities
-
 activitiesRouter.get("/", async (req, res, next) => {
 
     const activities = await getAllActivities();
@@ -65,7 +39,6 @@ activitiesRouter.get("/", async (req, res, next) => {
 });
 
 // POST /api/activities
-
 activitiesRouter.post("/", async (req, res, next) => {
 
     const { name, description } = req.body;
@@ -106,13 +79,7 @@ activitiesRouter.patch('/:activityId', async (req, res, next) => {
     const { activityId: id } = req.params;
     const { name, description } = req.body;
 
-    console.log('PATCH activityId is:', id);
-    // console.log('name is:', name);
-    // console.log('description is:', description);
-
     const auth = req.header('Authorization');
-
-    // console.log(auth);
 
     if (!auth) {
         res.status(401).send({
@@ -136,11 +103,8 @@ activitiesRouter.patch('/:activityId', async (req, res, next) => {
     try {
         const originalActivity = await getActivityById(id);
 
-        // console.log('oringinalActivity is:', originalActivity);
-
         if (originalActivity) {
             let updatedActivity = await updateActivity({ id, name, description });
-            // console.log('updatedActivity is:', updatedActivity)
 
             res.send(updatedActivity)
         } else {
